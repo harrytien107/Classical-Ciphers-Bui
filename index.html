@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="en">Classic Cryptography</title>
+    <title data-lang="vi">Mật Mã Học Cổ Điển</title>
+    <!-- Favicons -->
+    <link rel="icon" href="/public/favicon.ico" sizes="any">
+    <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/public/favicon-32x32.png" type="image/png">
+    <link rel="apple-touch-icon" href="/public/favicon.ico">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="theme-toggle">
+        <button id="theme-toggle-btn" aria-label="Switch to light mode">
+            <i class="fas fa-desktop"></i>
+        </button>
+    </div>
+    
+    <header>
+        <h1 data-lang="en">Classic Cryptography</h1>
+        <h1 data-lang="vi">Mật Mã Học Cổ Điển</h1>
+        <p data-lang="en">Explore and implement historical cipher methods</p>
+        <p data-lang="vi">Khám phá và thực hiện các phương pháp mã hóa lịch sử</p>
+        <div class="language-selector">
+            <button id="langEn" class="lang-btn active">English</button>
+            <button id="langVi" class="lang-btn">Tiếng Việt</button>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#caesar" class="active" data-lang="en">Caesar Cipher</a><a href="#caesar" class="active" data-lang="vi">Mã Caesar</a></li>
+            <li><a href="#playfair" data-lang="en">Playfair Cipher</a><a href="#playfair" data-lang="vi">Mã Playfair</a></li>
+            <li><a href="#polybius" data-lang="en">Polybius Cipher</a><a href="#polybius" data-lang="vi">Mã Polybius</a></li>
+            <li><a href="#trithemius" data-lang="en">Trithemius Cipher</a><a href="#trithemius" data-lang="vi">Mã Trithemius</a></li>
+            <li><a href="#cipher-disk" data-lang="en">Cipher Disk</a><a href="#cipher-disk" data-lang="vi">Đĩa Mã Hóa</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <!-- Caesar Cipher Section -->
+        <section id="caesar" class="cipher-section">
+            <h2 data-lang="en">Caesar Cipher <span class="icon-btn algo-btn" data-cipher="caesar" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="caesar" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Mã Caesar <span class="icon-btn algo-btn" data-cipher="caesar" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="caesar" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">
+                A monoalphabetic substitution cipher where each letter is replaced by a new one obtained by shifting 
+                a fixed number of positions in the alphabet. The traditional Caesar cipher uses a shift of 3.
+            </p>
+            <p class="description" data-lang="vi">
+                Một mật mã thay thế đơn bảng chữ cái, trong đó mỗi chữ cái được thay thế bằng một chữ cái mới bằng cách 
+                dịch chuyển một số vị trí cố định trong bảng chữ cái. Mã Caesar truyền thống sử dụng độ dịch là 3.
+            </p>
+            
+            <div class="formula-container">
+                <div class="formula">
+                    <h3 data-lang="en">Encryption:</h3>
+                    <h3 data-lang="vi">Mã hóa:</h3>
+                    <p>C<sub>i</sub> = E(M<sub>i</sub>) = (M<sub>i</sub> + 3) mod 26</p>
+                </div>
+                <div class="formula">
+                    <h3 data-lang="en">Decryption:</h3>
+                    <h3 data-lang="vi">Giải mã:</h3>
+                    <p>M<sub>i</sub> = D(C<sub>i</sub>) = (C<sub>i</sub> - 3) mod 26</p>
+                </div>
+            </div>
+            
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="caesar-input" data-lang="en">Input Text:</label>
+                        <label for="caesar-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="caesar-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="caesar-shift" data-lang="en">Shift (Default is 3):</label>
+                        <label for="caesar-shift" data-lang="vi">Độ dịch (Mặc định là 3):</label>
+                        <input type="number" id="caesar-shift" min="0" max="25" value="3">
+                    </div>
+                    <div class="button-group">
+                        <button id="caesar-encrypt" data-lang="en">Encrypt</button>
+                        <button id="caesar-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="caesar-decrypt" data-lang="en">Decrypt</button>
+                        <button id="caesar-decrypt" data-lang="vi">Giải mã</button>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <label for="caesar-output" data-lang="en">Result:</label>
+                    <label for="caesar-output" data-lang="vi">Kết quả:</label>
+                    <textarea id="caesar-output" readonly></textarea>
+                    <div class="explanation-container" id="caesar-explanation">
+                        <h4 data-lang="en">Explanation</h4>
+                        <h4 data-lang="vi">Giải thích</h4>
+                        <div class="explanation-content" id="caesar-explanation-content"></div>
+                    </div>
+
+                    <div class="caesar-table-container">
+                        <div class="caesar-table-title" data-lang="en">Table 4.2 Caesar Cipher</div>
+                        <div class="caesar-table-title" data-lang="vi">Bảng 4.2 Mã Caesar</div>
+                        
+                        <div class="table-type-selector">
+                            <label class="radio-container" data-lang="en">
+                                <input type="radio" name="tableType" id="simple-table" value="simple" checked>
+                                <span class="radio-text">Simple Table (2 rows)</span>
+                            </label>
+                            <label class="radio-container" data-lang="en">
+                                <input type="radio" name="tableType" id="full-table" value="full">
+                                <span class="radio-text">Full Table (26 rows)</span>
+                            </label>
+                            <label class="radio-container" data-lang="vi">
+                                <input type="radio" name="tableType" id="simple-table" value="simple" checked>
+                                <span class="radio-text">Bảng đơn giản (2 hàng)</span>
+                            </label>
+                            <label class="radio-container" data-lang="vi">
+                                <input type="radio" name="tableType" id="full-table" value="full">
+                                <span class="radio-text">Bảng đầy đủ (26 hàng)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="cipher-table" id="caesar-table"></div>
+                    </div>
+
+                    <div class="word-lookup-container">
+                        <h4 data-lang="en">Word Lookup</h4>
+                        <h4 data-lang="vi">Tra cứu từng từ</h4>
+                        <div class="word-lookup-form">
+                            <div class="form-group">
+                                <label for="caesar-word-input" data-lang="en">Enter a word:</label>
+                                <label for="caesar-word-input" data-lang="vi">Nhập một từ:</label>
+                                <input type="text" id="caesar-word-input" placeholder="Enter a single word" data-placeholder-en="Enter a single word" data-placeholder-vi="Nhập một từ">
+                                <div class="button-group">
+                                    <button type="button" id="caesar-word-encrypt-en" class="word-encrypt-btn" data-lang="en">Encrypt Word</button>
+                                    <button type="button" id="caesar-word-encrypt-vi" class="word-encrypt-btn" data-lang="vi">Mã hóa từ</button>
+                                    <button type="button" id="caesar-word-decrypt-en" class="word-decrypt-btn" data-lang="en">Decrypt Word</button>
+                                    <button type="button" id="caesar-word-decrypt-vi" class="word-decrypt-btn" data-lang="vi">Giải mã từ</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="word-lookup-result">
+                            <p data-lang="en">Original: <span class="caesar-word-original"></span></p>
+                            <p data-lang="vi">Từ gốc: <span class="caesar-word-original"></span></p>
+                            <p data-lang="en">Result: <span class="caesar-word-result"></span></p>
+                            <p data-lang="vi">Kết quả: <span class="caesar-word-result"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3 data-lang="en">Example 4.1:</h3>
+                <h3 data-lang="vi">Ví dụ 4.1:</h3>
+                <p data-lang="en">Using Table 4.2, the well-known sentence "VENI VIDI VICI" becomes the ciphertext:</p>
+                <p data-lang="vi">Sử dụng Bảng 4.2, câu nổi tiếng "VENI VIDI VICI" trở thành mã:</p>
+                <div class="example-content">
+                    <div class="example-row">
+                        <span class="label" data-lang="en">Cleartext:</span>
+                        <span class="label" data-lang="vi">Văn bản gốc:</span>
+                        <span class="text">VENI</span>
+                        <span class="text">VIDI</span>
+                        <span class="text">VICI</span>
+                    </div>
+                    <div class="example-row">
+                        <span class="label" data-lang="en">Ciphertext:</span>
+                        <span class="label" data-lang="vi">Văn bản mã hóa:</span>
+                        <span class="text">YHQL</span>
+                        <span class="text">YLGL</span>
+                        <span class="text">YLFL</span>
+                    </div>
+                </div>
+                <button id="try-caesar-example" data-lang="en">Try this example</button>
+                <button id="try-caesar-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+        
+        <!-- Playfair Cipher Section -->
+        <section id="playfair" class="cipher-section">
+            <h2 data-lang="en">Playfair Cipher <span class="icon-btn algo-btn" data-cipher="playfair" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="playfair" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Mã Playfair <span class="icon-btn algo-btn" data-cipher="playfair" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="playfair" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">
+                One of the most famous polygraphic ciphers. It encrypts pairs of letters (digrams) instead of single letters.
+                Invented by Sir Charles Wheatstone in 1854 but named after Lord Playfair, who promoted its use.
+            </p>
+            <p class="description" data-lang="vi">
+                Một trong những mã đồ thị đa chữ nổi tiếng nhất. Nó mã hóa các cặp chữ cái (digram) thay vì từng chữ cái.
+                Được phát minh bởi Sir Charles Wheatstone năm 1854 nhưng được đặt theo tên của Lord Playfair, người đã quảng bá việc sử dụng nó.
+            </p>
+            
+            <div class="rules">
+                <h3 data-lang="en">Rules:</h3>
+                <h3 data-lang="vi">Quy tắc:</h3>
+                <ol>
+                    <li data-lang="en">Create a 5×5 grid using a keyword (without repeating letters)</li>
+                    <li data-lang="vi">Tạo lưới 5×5 sử dụng từ khóa (không lặp lại chữ cái)</li>
+                    <li data-lang="en">The letters I and J are typically combined in one cell</li>
+                    <li data-lang="vi">Các chữ cái I và J thường được kết hợp trong một ô</li>
+                    <li data-lang="en">Encryption is done on groups of two letters (digrams)</li>
+                    <li data-lang="vi">Mã hóa được thực hiện trên các nhóm hai chữ cái (digram)</li>
+                    <li data-lang="en">If both letters are in the same row, take the letters to their right (wrapping if necessary)</li>
+                    <li data-lang="vi">Nếu cả hai chữ cái nằm trong cùng một hàng, lấy các chữ cái bên phải của chúng (quay vòng nếu cần)</li>
+                    <li data-lang="en">If both letters are in the same column, take the letters below (wrapping if necessary)</li>
+                    <li data-lang="vi">Nếu cả hai chữ cái nằm trong cùng một cột, lấy các chữ cái bên dưới (quay vòng nếu cần)</li>
+                    <li data-lang="en">If letters are in different rows and columns, form a rectangle and take the letters on the same row but at the corner of the rectangle</li>
+                    <li data-lang="vi">Nếu các chữ cái nằm ở các hàng và cột khác nhau, tạo thành hình chữ nhật và lấy các chữ cái trên cùng một hàng nhưng ở góc của hình chữ nhật</li>
+                </ol>
+            </div>
+            
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="playfair-input" data-lang="en">Input Text:</label>
+                        <label for="playfair-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="playfair-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="playfair-keyword" data-lang="en">Keyword:</label>
+                        <label for="playfair-keyword" data-lang="vi">Từ khóa:</label>
+                        <input type="text" id="playfair-keyword" placeholder="Enter keyword" data-placeholder-en="Enter keyword" data-placeholder-vi="Nhập từ khóa">
+                    </div>
+                    <div class="button-group">
+                        <button id="playfair-encrypt" data-lang="en">Encrypt</button>
+                        <button id="playfair-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="playfair-decrypt" data-lang="en">Decrypt</button>
+                        <button id="playfair-decrypt" data-lang="vi">Giải mã</button>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <label for="playfair-output" data-lang="en">Result:</label>
+                    <label for="playfair-output" data-lang="vi">Kết quả:</label>
+                    <textarea id="playfair-output" readonly></textarea>
+                    <div class="explanation-container" id="playfair-explanation">
+                        <h4 data-lang="en">Explanation</h4>
+                        <h4 data-lang="vi">Giải thích</h4>
+                        <div class="explanation-content" id="playfair-explanation-content"></div>
+                    </div>
+                    <div class="playfair-grid-container">
+                        <h4 data-lang="en">Playfair Grid:</h4>
+                        <h4 data-lang="vi">Lưới Playfair:</h4>
+                        <div class="playfair-grid" id="playfair-grid"></div>
+                        
+                        <div class="digraph-processing-container">
+                            <h4 data-lang="en">Digraph Processing:</h4>
+                            <h4 data-lang="vi">Xử lý cặp ký tự:</h4>
+                            <div id="playfair-digraph-processing" class="digraph-processing"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3 data-lang="en">Example 4.3:</h3>
+                <h3 data-lang="vi">Ví dụ 4.3:</h3>
+                <p data-lang="en">Using Playfair cipher, encrypt the plaintext "CRYPTOGRAPHY" using the keyword "LEONARD"</p>
+                <p data-lang="vi">Sử dụng mã Playfair, mã hóa văn bản "CRYPTOGRAPHY" bằng từ khóa "LEONARD"</p>
+                <div class="example-content">
+                    <div class="example-row">
+                        <span class="text">CR YP TO GR AP HY</span>
+                    </div>
+                    <div class="example-row">
+                        <span class="text">FD VT SN PG LU KW</span>
+                    </div>
+                </div>
+                <button id="try-playfair-example" data-lang="en">Try this example</button>
+                <button id="try-playfair-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+        
+        <!-- Polybius Cipher Section -->
+        <section id="polybius" class="cipher-section">
+            <h2 data-lang="en">Polybius Cipher <span class="icon-btn algo-btn" data-cipher="polybius" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="polybius" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Mã Polybius <span class="icon-btn algo-btn" data-cipher="polybius" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="polybius" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">
+                Invented by the Ancient Greek historian Polybius (203-120 BC). It uses a 5×5 grid where each letter 
+                is represented by its coordinates in the grid. The letters I and J are typically combined in one cell.
+            </p>
+            <p class="description" data-lang="vi">
+                Được phát minh bởi nhà sử học Hy Lạp cổ đại Polybius (203-120 TCN). Nó sử dụng lưới 5×5 trong đó mỗi 
+                chữ cái được biểu diễn bằng tọa độ của nó trong lưới. Các chữ cái I và J thường được kết hợp trong một ô.
+            </p>
+            
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="polybius-input" data-lang="en">Input Text:</label>
+                        <label for="polybius-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="polybius-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="polybius-mode" data-lang="en">Mode:</label>
+                        <label for="polybius-mode" data-lang="vi">Chế độ:</label>
+                        <select id="polybius-mode">
+                            <option value="standard" data-lang="en">Standard (Numbers)</option>
+                            <option value="standard" data-lang="vi">Tiêu chuẩn (Số)</option>
+                            <option value="custom" data-lang="en">Custom Layout</option>
+                            <option value="custom" data-lang="vi">Bố cục tùy chỉnh</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button id="polybius-encrypt" data-lang="en">Encrypt</button>
+                        <button id="polybius-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="polybius-decrypt" data-lang="en">Decrypt</button>
+                        <button id="polybius-decrypt" data-lang="vi">Giải mã</button>
+                    </div>
+                    
+                    <div class="coordinate-helper">
+                        <h4 data-lang="en">Coordinate Helper</h4>
+                        <h4 data-lang="vi">Trợ giúp tọa độ</h4>
+                        <div class="form-group">
+                            <label for="polybius-coord-input" data-lang="en">Find Letter:</label>
+                            <label for="polybius-coord-input" data-lang="vi">Tìm chữ cái:</label>
+                            <div class="helper-input-group">
+                                <input type="text" id="polybius-coord-input" maxlength="1" placeholder="A-Z" data-placeholder-en="A-Z" data-placeholder-vi="A-Z">
+                                <button id="polybius-find-coord" data-lang="en">Find</button>
+                                <button id="polybius-find-coord" data-lang="vi">Tìm</button>
+                            </div>
+                            <div id="polybius-coord-result" class="helper-result"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <label for="polybius-output" data-lang="en">Result:</label>
+                    <label for="polybius-output" data-lang="vi">Kết quả:</label>
+                    <textarea id="polybius-output" readonly></textarea>
+                    <div class="explanation-container" id="polybius-explanation">
+                        <h4 data-lang="en">Explanation</h4>
+                        <h4 data-lang="vi">Giải thích</h4>
+                        <div class="explanation-content" id="polybius-explanation-content"></div>
+                    </div>
+                    <div class="polybius-square-container">
+                        <h4 data-lang="en">Polybius Square:</h4>
+                        <h4 data-lang="vi">Hình vuông Polybius:</h4>
+                        <div class="polybius-square" id="polybius-square"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3 data-lang="en">Example 4.2:</h3>
+                <h3 data-lang="vi">Ví dụ 4.2:</h3>
+                <p data-lang="en">Using Polybius square, encrypt "DANG HOANG VIET"</p>
+                <p data-lang="vi">Sử dụng hình vuông Polybius, mã hóa "DANG HOANG VIET"</p>
+                <button id="try-polybius-example" data-lang="en">Try this example</button>
+                <button id="try-polybius-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+        
+        <!-- Trithemius Cipher Section -->
+        <section id="trithemius" class="cipher-section">
+            <h2 data-lang="en">Trithemius Cipher <span class="icon-btn algo-btn" data-cipher="trithemius" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="trithemius" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Mã Trithemius <span class="icon-btn algo-btn" data-cipher="trithemius" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="trithemius" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">
+                A polyalphabetic substitution cipher invented by Johannes Trithemius. It uses multiple cipher alphabets 
+                for encryption, making frequency analysis more difficult.
+            </p>
+            <p class="description" data-lang="vi">
+                Mã thay thế đa bảng chữ cái được phát minh bởi Johannes Trithemius. Nó sử dụng nhiều bảng chữ cái 
+                cho mã hóa, làm cho việc phân tích tần suất khó khăn hơn.
+            </p>
+            
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="trithemius-input" data-lang="en">Input Text:</label>
+                        <label for="trithemius-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="trithemius-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="trithemius-key-type" data-lang="en">Key Type:</label>
+                        <label for="trithemius-key-type" data-lang="vi">Loại khóa:</label>
+                        <select id="trithemius-key-type">
+                            <option value="progressive" data-lang="en">Progressive (Standard)</option>
+                            <option value="progressive" data-lang="vi">Tiến triển (Chuẩn)</option>
+                            <option value="squared" data-lang="en">Squared</option>
+                            <option value="squared" data-lang="vi">Bình phương</option>
+                            <option value="custom" data-lang="en">Custom Key</option>
+                            <option value="custom" data-lang="vi">Khóa tùy chỉnh</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="trithemius-key-container">
+                        <label for="trithemius-key" data-lang="en">Custom Key:</label>
+                        <label for="trithemius-key" data-lang="vi">Khóa tùy chỉnh:</label>
+                        <input type="text" id="trithemius-key" placeholder="Enter key (text or numbers)" data-placeholder-en="Enter key (text or numbers)" data-placeholder-vi="Nhập khóa (văn bản hoặc số)">
+                    </div>
+                    <div class="button-group">
+                        <button id="trithemius-encrypt" data-lang="en">Encrypt</button>
+                        <button id="trithemius-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="trithemius-decrypt" data-lang="en">Decrypt</button>
+                        <button id="trithemius-decrypt" data-lang="vi">Giải mã</button>
+                    </div>
+                    
+                    <div class="key-sequence-container">
+                        <h4 data-lang="en">Key Sequence:</h4>
+                        <h4 data-lang="vi">Dãy khóa:</h4>
+                        <div id="trithemius-key-sequence" class="key-sequence"></div>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <label for="trithemius-output" data-lang="en">Result:</label>
+                    <label for="trithemius-output" data-lang="vi">Kết quả:</label>
+                    <textarea id="trithemius-output" readonly></textarea>
+                    <div class="explanation-container" id="trithemius-explanation">
+                        <h4 data-lang="en">Explanation</h4>
+                        <h4 data-lang="vi">Giải thích</h4>
+                        <div class="explanation-content" id="trithemius-explanation-content"></div>
+                    </div>
+                    <div class="tabula-recta-container">
+                        <h4 data-lang="en">Tabula Recta (partial view):</h4>
+                        <h4 data-lang="vi">Bảng Tabula Recta (xem một phần):</h4>
+                        <div class="tabula-recta" id="trithemius-table"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3 data-lang="en">Trithemius Example:</h3>
+                <h3 data-lang="vi">Ví dụ Trithemius:</h3>
+                <p data-lang="en">Encrypt "ALL YOU WILL PASS THE EXAM" using index K and keyword KM21</p>
+                <p data-lang="vi">Mã hóa "ALL YOU WILL PASS THE EXAM" sử dụng chỉ số K và từ khóa KM21</p>
+                <button id="try-trithemius-example" data-lang="en">Try this example</button>
+                <button id="try-trithemius-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+        
+        <!-- Cipher Disk Section -->
+        <section id="cipher-disk" class="cipher-section">
+            <h2 data-lang="en">Cipher Disk <span class="icon-btn algo-btn" data-cipher="disk" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="disk" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Đĩa Mã Hóa <span class="icon-btn algo-btn" data-cipher="disk" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="disk" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">
+                Also known as a cipher wheel, this is a physical encryption tool consisting of two concentric disks. 
+                By rotating the inner disk, a simple substitution cipher is created.
+            </p>
+            <p class="description" data-lang="vi">
+                Còn được gọi là bánh xe mã hóa, đây là một công cụ mã hóa vật lý bao gồm hai đĩa đồng tâm. 
+                Bằng cách xoay đĩa bên trong, một mã thay thế đơn giản được tạo ra.
+            </p>
+            
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="disk-input" data-lang="en">Input Text:</label>
+                        <label for="disk-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="disk-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    
+                    <div class="disk-settings">
+                        <h4 data-lang="en">Disk Configuration</h4>
+                        <h4 data-lang="vi">Cấu hình đĩa mã hóa</h4>
+                        
+                        <div class="form-group">
+                            <label for="outer-disk-chars" data-lang="en">Outer Disk (Plaintext):</label>
+                            <label for="outer-disk-chars" data-lang="vi">Vòng ngoài (Plaintext):</label>
+                            <input type="text" id="outer-disk-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="26" placeholder="Custom characters for outer disk (A-Z)" data-placeholder-en="Custom characters for outer disk (A-Z)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng ngoài (A-Z)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inner-disk-chars" data-lang="en">Inner Disk (Ciphertext):</label>
+                            <label for="inner-disk-chars" data-lang="vi">Vòng trong (Ciphertext):</label>
+                            <input type="text" id="inner-disk-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="26" placeholder="Custom characters for inner disk (A-Z)" data-placeholder-en="Custom characters for inner disk (A-Z)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng trong (A-Z)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="disk-keyword" data-lang="en">Keyword:</label>
+                            <label for="disk-keyword" data-lang="vi">Keyword:</label>
+                            <input type="text" id="disk-keyword" placeholder="Enter keyword" data-placeholder-en="Enter keyword" data-placeholder-vi="Nhập từ khóa">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="disk-index" data-lang="en">Match Character (Index):</label>
+                            <label for="disk-index" data-lang="vi">Ký tự khớp (Index):</label>
+                            <input type="text" id="disk-index" value="A" maxlength="1">
+                        </div>
+                        
+                        <div class="disk-control-buttons">
+                            <button id="load-from-keyword" data-lang="en">Load from Keyword</button>
+                            <button id="load-from-keyword" data-lang="vi">Tải từ Keyword</button>
+                            <button id="reset-disk" data-lang="en">Reset</button>
+                            <button id="reset-disk" data-lang="vi">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="disk-encrypt" data-lang="en">Encrypt</button>
+                        <button id="disk-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="disk-decrypt" data-lang="en">Decrypt</button>
+                        <button id="disk-decrypt" data-lang="vi">Giải mã</button>
+                        <button id="clear-disk" data-lang="en">Clear All</button>
+                        <button id="clear-disk" data-lang="vi">Xóa tất cả</button>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <div class="result-header">
+                        <label for="disk-output" data-lang="en">Result:</label>
+                        <label for="disk-output" data-lang="vi">Kết quả:</label>
+                        <div class="result-actions">
+                            <button id="copy-disk-result" class="icon-button" title="Copy to clipboard" aria-label="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button id="explain-disk-btn" class="icon-button" title="Show explanation" aria-label="Show explanation">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="disk-output" readonly></textarea>
+                    
+                    <!-- Replace explanation container with explanation button -->
+                    <div class="explanation-button-container">
+                        <button id="disk-explanation-btn" class="btn-explanation" data-lang="en">Show Explanation</button>
+                        <button id="disk-explanation-btn" class="btn-explanation" data-lang="vi">Xem Giải thích</button>
+                    </div>
+                    
+                    <!-- Modal for explanation -->
+                    <div id="explanation-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 data-lang="en">Cipher Disk Explanation</h4>
+                                <h4 data-lang="vi">Giải thích Đĩa Mã Hóa</h4>
+                                <span class="close-modal">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <div id="disk-explanation-content" class="explanation-content"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="modal-close-btn" data-lang="en">Close</button>
+                                <button id="modal-close-btn" data-lang="vi">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cipher-disk-container">
+                        <div class="disk-titles">
+                            <h4 data-lang="en">Interactive Cipher Disk:</h4>
+                            <h4 data-lang="vi">Đĩa Mã Hóa Tương Tác:</h4>
+                            <h5 data-lang="en">Showing alignment of disks</h5>
+                            <h5 data-lang="vi">Hiển thị căn chỉnh các đĩa</h5>
+                        </div>
+                        
+                        <div class="cipher-disk-wrapper">
+                            <div class="cipher-disk">
+                                <div class="outer-disk" id="outer-disk"></div>
+                                <div class="inner-disk" id="inner-disk"></div>
+                                <div class="disk-center"></div>
+                                <div class="alignment-marker"></div>
+                            </div>
+                            <div class="disk-controls">
+                                <button id="rotate-left" class="disk-control-btn">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button id="rotate-right" class="disk-control-btn">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="algorithm-formula">
+                            <h5 data-lang="en">Encryption Formula:</h5>
+                            <h5 data-lang="vi">Công thức mã hóa:</h5>
+                            <ol>
+                                <li data-lang="en">Find the keyword character position on outer disk</li>
+                                <li data-lang="en">Find the plaintext character position on outer disk</li>
+                                <li data-lang="en">Calculate: relativePos = plainPos - keywordPos</li>
+                                <li data-lang="en">Calculate: innerIndex = (indexPos + relativePos + innerLength) % innerLength</li>
+                                <li data-lang="en">Get character at innerIndex position from inner disk</li>
+                                <li data-lang="vi">Tìm vị trí của ký tự keyword trong vòng ngoài</li>
+                                <li data-lang="vi">Tìm vị trí của ký tự plaintext trong vòng ngoài</li>
+                                <li data-lang="vi">Tính: relativePos = plainPos - keywordPos</li>
+                                <li data-lang="vi">Tính: innerIndex = (indexPos + relativePos + innerLength) % innerLength</li>
+                                <li data-lang="vi">Lấy ký tự tại vị trí innerIndex trong vòng trong</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3 data-lang="en">Cipher Disk Example:</h3>
+                <h3 data-lang="vi">Ví dụ Đĩa Mã Hóa:</h3>
+                <p data-lang="en">Encrypt "MEET ME AT MIDNIGHT" with key 'D'</p>
+                <p data-lang="vi">Mã hóa "MEET ME AT MIDNIGHT" với khóa 'D'</p>
+                <button id="try-disk-example" data-lang="en">Try this example</button>
+                <button id="try-disk-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p data-lang="en">&copy; 2023 Classic Cryptography. All rights reserved.</p>
+        <p data-lang="vi">&copy; 2023 Mật Mã Học Cổ Điển. Bản quyền đã được bảo hộ.</p>
+    </footer>
+    
+    <script src="scripts.js"></script>
+    <!-- Global Info Modal -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="info-modal-title">Info</h4>
+                <span class="close-modal" id="info-modal-close">&times;</span>
+            </div>
+            <div class="modal-body" id="info-modal-body"></div>
+            <div class="modal-footer">
+                <button id="info-modal-close-btn" data-lang="en">Close</button>
+                <button id="info-modal-close-btn" data-lang="vi">Đóng</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
