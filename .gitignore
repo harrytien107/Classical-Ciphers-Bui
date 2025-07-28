@@ -1,0 +1,7 @@
+# Ensure .cursor and its contents are ignored
+# Ignore all .cursor directory and its contents
+.cursor/**
+# Ignore the .cursor metadata directory
+.cursor/**
+# Add ignore rule for .cursor directory and its contents
+.cursor/
