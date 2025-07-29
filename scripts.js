@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPolybiusCipher();
     initTrithemiusCipher();
     initCipherDisk();
+    initVigenereCipher();
     
     // Hiển thị các bảng mã
     displayCaesarTable();
@@ -1391,19 +1392,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to display the key sequence
     function displayKeySequence(keySequence) {
         const keySequenceContainer = document.getElementById('trithemius-key-sequence');
-        keySequenceContainer.innerHTML = '';
-        
-        const maxDisplay = 20;  // Maximum number of keys to display initially
-        
+        if (!keySequenceContainer) return;
         let html = '';
-        for (let i = 0; i < Math.min(keySequence.length, maxDisplay); i++) {
-            html += `<span class="key-item">${keySequence[i]}</span>`;
-        }
-        
-        if (keySequence.length > maxDisplay) {
-            html += `<span>... (${keySequence.length - maxDisplay} more)</span>`;
-        }
-        
+        keySequence.forEach(k => {
+            html += `<span class="key-item">${k}</span>`;
+        });
         keySequenceContainer.innerHTML = html;
     }
     
@@ -1990,17 +1983,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Disk rotation event listeners
         rotateLeftBtn.addEventListener('click', () => {
-            const currentRotation = getCurrentRotation(innerDisk);
-            const outerChars = outerDiskChars.value;
-            rotateInnerDisk(currentRotation - (360 / outerChars.length));
-            updateIndexFromRotation();
+            const mode=document.querySelector('input[name="rotationMode"]:checked').value;
+            const outerChars=outerDiskChars.value;
+            if(mode==='inner'){
+                const currentRotation=getCurrentRotation(innerDisk);
+                rotateInnerDisk(currentRotation - (360/outerChars.length));
+                updateIndexFromRotation();
+            }else{
+                const currentRotation=getCurrentRotation(outerDisk);
+                rotateOuterDisk(currentRotation - (360/outerChars.length));
+            }
         });
 
         rotateRightBtn.addEventListener('click', () => {
-            const currentRotation = getCurrentRotation(innerDisk);
-            const outerChars = outerDiskChars.value;
-            rotateInnerDisk(currentRotation + (360 / outerChars.length));
-            updateIndexFromRotation();
+            const mode=document.querySelector('input[name="rotationMode"]:checked').value;
+            const outerChars=outerDiskChars.value;
+            if(mode==='inner'){
+                const currentRotation=getCurrentRotation(innerDisk);
+                rotateInnerDisk(currentRotation + (360/outerChars.length));
+                updateIndexFromRotation();
+            }else{
+                const currentRotation=getCurrentRotation(outerDisk);
+                rotateOuterDisk(currentRotation + (360/outerChars.length));
+            }
         });
     }
     
@@ -2596,6 +2601,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 en:`<h5>Strengths</h5><ul><li>Tactile, easy for field use.</li><li>Variable key aligns quickly.</li></ul><h5>Weaknesses</h5><ul><li>Security similar to Caesar if key short.</li><li>Physical device can be lost.</li></ul><h5>Cryptanalysis</h5><p>If keyword known length, treat as Vigenère; otherwise perform Kasiski/Friedman to recover alignment sequence.</p>`,
                 vi:`<h5>Ưu điểm</h5><ul><li>Dễ thao tác thực địa.</li><li>Có thể thay đổi khóa nhanh.</li></ul><h5>Nhược điểm</h5><ul><li>Bảo mật tương đương Caesar nếu khóa ngắn.</li><li>Mất thiết bị sẽ lộ thông tin.</li></ul><h5>Phá mã</h5><p>Nếu biết chiều dài từ khóa, coi như Vigenère; ngược lại dùng Kasiski/Friedman để tìm chu kỳ căn chỉnh.</p>`
             }
+        },
+        vigenere: {
+            algorithm: {
+                en: `<p>The Vigenère cipher is a <strong>polyalphabetic</strong> substitution cipher published in 1553 by Giovan Battista Bellaso ― but later (wrongly) attributed to Blaise de Vigenère.</p>
+                <h5>Construction</h5>
+                <ol>
+                    <li>Choose a <em>keyword</em> (e.g. <code>KEY</code>).</li>
+                    <li>Repeat / truncate it to match the plaintext length: <code>KEYKEY…</code></li>
+                    <li>For each position <code>i</code>:<br>
+                        P<sub>i</sub> = value of plaintext letter (<code>A=0…Z=25</code>)<br>
+                        K<sub>i</sub> = value of keyword letter.<br>
+                        <strong>Encryption</strong>: C<sub>i</sub> = (P<sub>i</sub> + K<sub>i</sub>) mod 26<br>
+                        <strong>Decryption</strong>: P<sub>i</sub> = (C<sub>i</sub> − K<sub>i</sub> + 26) mod 26</li>
+                </ol>
+                <p>The table of shifted alphabets (Tabula Recta) used for this procedure is known as the <em>Vigenère Square</em>.</p>`,
+                vi: `<p>Vigénère là mật mã <strong>đa bảng chữ cái</strong> được Giovan Battista Bellaso công bố năm 1553 (sau này gán nhầm cho Blaise de Vigenère).</p>
+                <h5>Khởi tạo</h5>
+                <ol>
+                    <li>Chọn <em>từ khóa</em> (ví dụ <code>KEY</code>).</li>
+                    <li>Lặp / cắt từ khóa để có độ dài bằng văn bản gốc: <code>KEYKEY…</code></li>
+                    <li>Với mỗi vị trí <code>i</code>:<br>
+                        P<sub>i</sub> = giá trị chữ cái bản rõ (<code>A=0…Z=25</code>)<br>
+                        K<sub>i</sub> = giá trị chữ cái khóa.<br>
+                        <strong>Mã hóa</strong>: C<sub>i</sub> = (P<sub>i</sub> + K<sub>i</sub>) mod 26<br>
+                        <strong>Giải mã</strong>: P<sub>i</sub> = (C<sub>i</sub> − K<sub>i</sub> + 26) mod 26</li>
+                </ol>
+                <p>Bảng 26×26 các bảng chữ cái dịch (Tabula Recta) được gọi là <em>Bảng Vigénère</em>.</p>`
+            },
+            info: {
+                en: `<h5>Strengths</h5>
+                <ul><li>Breaks single-letter frequency statistics → more resistant than monoalphabetic ciphers.</li><li>With a <em>truly random</em> key the length of the message, it becomes a <em>one-time pad</em> (provably unbreakable).</li></ul>
+                <h5>Weaknesses</h5>
+                <ul><li>Keyword repetition creates periodicity → vulnerable to <strong>Kasiski examination</strong> &amp; <strong>Friedman test</strong>.</li><li>Short keywords reduce security to interleaved Caesar ciphers.</li></ul>
+                <h5>Historical Notes</h5>
+                <ul><li>Often called "le chiffrage indéchiffrable" (the indecipherable cipher) until 19th-century cryptanalysis.</li><li>Used in the American Civil War and other historical correspondence.</li></ul>`,
+                vi: `<h5>Ưu điểm</h5>
+                <ul><li>Phá vỡ thống kê tần suất đơn ký tự → an toàn hơn các mã đơn bảng.</li><li>Nếu khóa ngẫu nhiên, dài bằng thông điệp ⇒ trở thành <em>one-time pad</em> (không thể phá).</li></ul>
+                <h5>Nhược điểm</h5>
+                <ul><li>Từ khóa lặp gây tính chu kỳ → dễ bị tấn công <strong>Kasiski</strong> &amp; <strong>Friedman</strong>.</li><li>Từ khóa ngắn ⇒ thực chất là nhiều Caesar ghép lại.</li></ul>
+                <h5>Lịch sử</h5>
+                <ul><li>Từng được gọi là "le chiffrage indéchiffrable" (mật mã không thể giải) cho tới TK 19.</li><li>Được sử dụng trong Nội chiến Mỹ và nhiều thư tín lịch sử.</li></ul>`
+            }
         }
     };
 
@@ -2622,4 +2669,198 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'auto';
     }
     infoModalCloseBtns.forEach(btn => btn.addEventListener('click', closeInfoModal));
+
+    // ==== Vigenère Cipher Implementation ====
+    function initVigenereCipher() {
+        const vigenereInput = document.getElementById('vigenere-input');
+        const vigenereKeyword = document.getElementById('vigenere-keyword');
+        const vigenereEncrypt = document.querySelectorAll('#vigenere-encrypt');
+        const vigenereDecrypt = document.querySelectorAll('#vigenere-decrypt');
+        const vigenereOutput = document.getElementById('vigenere-output');
+        const vigenereExplanationBtn = document.querySelectorAll('#vigenere-explanation-btn');
+        const vigenereExplanationModal = document.getElementById('vigenere-explanation-modal');
+        const vigenereExplanationContent = document.getElementById('vigenere-explanation-content');
+        const vigenereExplanationCloseBtns = document.querySelectorAll('#vigenere-explanation-close, #vigenere-explanation-close-btn');
+        const vigenereSquare = document.getElementById('vigenere-square');
+        const tryVigenereExample = document.querySelectorAll('#try-vigenere-example');
+
+        // Ensure keyword stays uppercase letters only
+        vigenereKeyword.addEventListener('input', () => {
+            vigenereKeyword.value = vigenereKeyword.value.toUpperCase().replace(/[^A-Z]/g, '');
+        });
+
+        vigenereEncrypt.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = vigenereInput.value.toUpperCase();
+                const key = vigenereKeyword.value.toUpperCase();
+                const result = vigenereEncryptText(text, key);
+                vigenereOutput.value = result;
+                generateVigenereExplanation(text, result, key, true);
+            });
+        });
+
+        vigenereDecrypt.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = vigenereInput.value.toUpperCase();
+                const key = vigenereKeyword.value.toUpperCase();
+                const result = vigenereDecryptText(text, key);
+                vigenereOutput.value = result;
+                generateVigenereExplanation(text, result, key, false);
+            });
+        });
+
+        tryVigenereExample.forEach(btn => {
+            btn.addEventListener('click', () => {
+                vigenereInput.value = 'HELLOWORLD';
+                vigenereKeyword.value = 'KEY';
+                vigenereEncrypt[0].click();
+                document.querySelector('#vigenere').scrollIntoView({behavior: 'smooth'});
+            });
+        });
+
+        // Explanation modal open handler
+        vigenereExplanationBtn.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (vigenereExplanationContent.innerHTML) {
+                    vigenereExplanationModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        // Close modal handlers
+        vigenereExplanationCloseBtns.forEach(btn => btn.addEventListener('click', () => {
+            vigenereExplanationModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }));
+
+        // Close when clicking outside modal
+        window.addEventListener('click', (e)=>{
+            if(e.target===vigenereExplanationModal){
+                vigenereExplanationModal.style.display='none';
+                document.body.style.overflow='auto';
+            }
+        });
+
+        // Display the Vigenere square once
+        displayVigenereSquare();
+    }
+
+    function generateKeyStream(text, key) {
+        key = key.replace(/[^A-Z]/g, '');
+        if (key.length === 0) key = 'A';
+        let stream = '';
+        let idx = 0;
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (/[A-Z]/.test(ch)) {
+                stream += key[idx % key.length];
+                idx++;
+            } else {
+                stream += ch;
+            }
+        }
+        return stream;
+    }
+
+    function vigenereEncryptText(text, key) {
+        const keyStream = generateKeyStream(text, key);
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            const k = keyStream[i];
+            if (/[A-Z]/.test(ch)) {
+                const shift = k.charCodeAt(0) - 65;
+                const code = ((ch.charCodeAt(0) - 65 + shift) % 26) + 65;
+                result += String.fromCharCode(code);
+            } else {
+                result += ch;
+            }
+        }
+        return result;
+    }
+
+    function vigenereDecryptText(text, key) {
+        const keyStream = generateKeyStream(text, key);
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            const k = keyStream[i];
+            if (/[A-Z]/.test(ch)) {
+                const shift = k.charCodeAt(0) - 65;
+                const code = ((ch.charCodeAt(0) - 65 - shift + 26) % 26) + 65;
+                result += String.fromCharCode(code);
+            } else {
+                result += ch;
+            }
+        }
+        return result;
+    }
+
+    function displayVigenereSquare(){
+        const container=document.getElementById('vigenere-square');
+        if(!container) return;
+        container.innerHTML='';
+        // Add empty corner cell
+        const corner=document.createElement('div');
+        corner.className='cell header';
+        corner.textContent='';
+        container.appendChild(corner);
+        // Column headers A-Z
+        for(let i=0;i<26;i++){
+            const cell=document.createElement('div');
+            cell.className='cell header';
+            cell.textContent=String.fromCharCode(65+i);
+            container.appendChild(cell);
+        }
+        // Rows
+        for(let row=0;row<26;row++){
+            const rowHeader=document.createElement('div');
+            rowHeader.className='cell header index';
+            rowHeader.textContent=String.fromCharCode(65+row);
+            container.appendChild(rowHeader);
+            for(let col=0;col<26;col++){
+                const cell=document.createElement('div');
+                cell.className='cell';
+                cell.textContent=String.fromCharCode(65+((row+col)%26));
+                container.appendChild(cell);
+            }
+        }
+    }
+
+    function generateVigenereExplanation(input, output, key, isEncrypt){
+        const container=document.getElementById('vigenere-explanation-content');
+        if(!container) return;
+        const isEnglish=document.body.classList.contains('lang-en');
+        let html='';
+        const title=isEnglish? (isEncrypt?'Vigenère Encryption Process:':'Vigenère Decryption Process:') : (isEncrypt?'Quá trình mã hóa Vigénère:':'Quá trình giải mã Vigénère:');
+        html+=`<div class="step"><strong>${title}</strong></div>`;
+        const cleanKey=key.replace(/[^A-Z]/g,'')||'A';
+        html+=`<div class="step">${isEnglish? 'Keyword':'Từ khóa'}: <strong>${cleanKey}</strong></div>`;
+        const keyStream=generateKeyStream(input.toUpperCase(), cleanKey);
+        html+=`<div class="step">${isEnglish? 'Key stream':'Dãy khóa'}: <span class="letter">${keyStream.substr(0, Math.min(20,keyStream.length))}${keyStream.length>20?'...':''}</span></div>`;
+        const maxChars=10;
+        for(let i=0;i<Math.min(input.length,maxChars);i++){
+            const ch=input[i].toUpperCase();
+            const k=keyStream[i];
+            if(/[A-Z]/.test(ch)){
+                const p=ch.charCodeAt(0)-65;
+                const s=k.charCodeAt(0)-65;
+                const res=output[i]||'';
+                const formula=isEncrypt? `((${p}+${s}) mod 26)`:`((${p}-${s}+26) mod 26)`;
+                html+=`<div class="step"><span class="letter">${ch}</span> &amp; <span class="letter">${k}</span> → ${formula} → <span class="letter">${res}</span></div>`;
+            }else{
+                html+=`<div class="step"><span class="letter">${ch}</span> ${isEnglish?'(non-letter kept)':'(giữ nguyên)'}</div>`;
+            }
+        }
+        if(input.length>maxChars){
+            html+=`<div class="step">... (${input.length-maxChars} ${isEnglish?'more characters':'ký tự nữa'})</div>`;
+        }
+        container.innerHTML=html;
+    }
+
+    function rotateOuterDisk(degrees){
+        degrees=((degrees%360)+360)%360;
+        outerDisk.style.transform=`rotate(${degrees}deg)`;
+    }
 });

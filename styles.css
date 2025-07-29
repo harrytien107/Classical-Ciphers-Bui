@@ -1147,6 +1147,17 @@ footer {
     background-color: var(--primary-color);
 }
 
+/* Rotation mode selector */
+.rotation-mode-selector {
+    margin-bottom: 0.75rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.rotation-mode-selector label {
+    font-size: 0.85rem;
+}
+
 .result-header {
     display: flex;
     align-items: center;
@@ -1596,4 +1607,34 @@ footer {
 
 .icon-btn:hover {
     color: var(--primary-color);
+} 
+
+/* Make Trithemius Tabula Recta & Vigenère Square smaller */
+#trithemius-table {
+    grid-template-columns: repeat(27, 24px);
+}
+
+#vigenere-square {
+    grid-template-columns: repeat(27, 24px);
+}
+
+#trithemius-table .cell,
+#vigenere-square .cell {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 600px) {
+    #trithemius-table {
+        grid-template-columns: repeat(27, 18px);
+    }
+    #vigenere-square {
+        grid-template-columns: repeat(27, 18px);
+    }
+    #trithemius-table .cell,
+    #vigenere-square .cell {
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+    }
 } 

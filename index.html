@@ -38,6 +38,7 @@
             <li><a href="#playfair" data-lang="en">Playfair Cipher</a><a href="#playfair" data-lang="vi">Mã Playfair</a></li>
             <li><a href="#polybius" data-lang="en">Polybius Cipher</a><a href="#polybius" data-lang="vi">Mã Polybius</a></li>
             <li><a href="#trithemius" data-lang="en">Trithemius Cipher</a><a href="#trithemius" data-lang="vi">Mã Trithemius</a></li>
+            <li><a href="#vigenere" data-lang="en">Vigenère Cipher</a><a href="#vigenere" data-lang="vi">Mã Vigénère</a></li>
             <li><a href="#cipher-disk" data-lang="en">Cipher Disk</a><a href="#cipher-disk" data-lang="vi">Đĩa Mã Hóa</a></li>
         </ul>
     </nav>
@@ -424,6 +425,80 @@
             </div>
         </section>
         
+        <!-- Vigenère Cipher Section -->
+        <section id="vigenere" class="cipher-section">
+            <h2 data-lang="en">Vigenère Cipher <span class="icon-btn algo-btn" data-cipher="vigenere" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="vigenere" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Mã Vigénère <span class="icon-btn algo-btn" data-cipher="vigenere" data-type="algorithm" title="Mô tả thuật toán"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="vigenere" data-type="info" title="Thông tin bổ sung"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">A polyalphabetic substitution cipher that uses a keyword to determine the shift for each letter.</p>
+            <p class="description" data-lang="vi">Một mật mã thay thế đa bảng chữ cái sử dụng từ khóa để xác định độ dịch cho mỗi chữ cái.</p>
+
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="vigenere-input" data-lang="en">Input Text:</label>
+                        <label for="vigenere-input" data-lang="vi">Văn bản đầu vào:</label>
+                        <textarea id="vigenere-input" placeholder="Enter text to encrypt/decrypt" data-placeholder-en="Enter text to encrypt/decrypt" data-placeholder-vi="Nhập văn bản để mã hóa/giải mã"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="vigenere-keyword" data-lang="en">Keyword:</label>
+                        <label for="vigenere-keyword" data-lang="vi">Từ khóa:</label>
+                        <input type="text" id="vigenere-keyword" placeholder="Enter keyword" data-placeholder-en="Enter keyword" data-placeholder-vi="Nhập từ khóa">
+                    </div>
+                    <div class="button-group">
+                        <button id="vigenere-encrypt" data-lang="en">Encrypt</button>
+                        <button id="vigenere-encrypt" data-lang="vi">Mã hóa</button>
+                        <button id="vigenere-decrypt" data-lang="en">Decrypt</button>
+                        <button id="vigenere-decrypt" data-lang="vi">Giải mã</button>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <label for="vigenere-output" data-lang="en">Result:</label>
+                    <label for="vigenere-output" data-lang="vi">Kết quả:</label>
+                    <textarea id="vigenere-output" readonly></textarea>
+
+                    <!-- Explanation button -->
+                    <div class="explanation-button-container">
+                        <button id="vigenere-explanation-btn" class="btn-explanation" data-lang="en">Show Explanation</button>
+                        <button id="vigenere-explanation-btn" class="btn-explanation" data-lang="vi">Xem Giải thích</button>
+                    </div>
+
+                    <!-- Modal for Vigenere explanation -->
+                    <div id="vigenere-explanation-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 data-lang="en">Vigenère Explanation</h4>
+                                <h4 data-lang="vi">Giải thích Vigénère</h4>
+                                <span class="close-modal" id="vigenere-explanation-close">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <div id="vigenere-explanation-content" class="explanation-content"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="vigenere-explanation-close-btn" data-lang="en">Close</button>
+                                <button id="vigenere-explanation-close-btn" data-lang="vi">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vigenere Square -->
+                    <div class="vigenere-square-container">
+                        <h4 data-lang="en">Vigenère Square:</h4>
+                        <h4 data-lang="vi">Bảng Vigenère:</h4>
+                        <div class="tabula-recta" id="vigenere-square"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example">
+                <h3 data-lang="en">Example:</h3>
+                <h3 data-lang="vi">Ví dụ:</h3>
+                <p data-lang="en">Encrypt "HELLOWORLD" using keyword "KEY"</p>
+                <p data-lang="vi">Mã hóa "HELLOWORLD" với từ khóa "KEY"</p>
+                <button id="try-vigenere-example" data-lang="en">Try this example</button>
+                <button id="try-vigenere-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+        
         <!-- Cipher Disk Section -->
         <section id="cipher-disk" class="cipher-section">
             <h2 data-lang="en">Cipher Disk <span class="icon-btn algo-btn" data-cipher="disk" data-type="algorithm" title="Algorithm Description"><i class="fas fa-book"></i></span> <span class="icon-btn info-btn" data-cipher="disk" data-type="info" title="Additional Info"><i class="fas fa-info-circle"></i></span></h2>
@@ -448,6 +523,13 @@
                     <div class="disk-settings">
                         <h4 data-lang="en">Disk Configuration</h4>
                         <h4 data-lang="vi">Cấu hình đĩa mã hóa</h4>
+                        <!-- Rotation mode selector -->
+                        <div class="form-group rotation-mode-selector">
+                            <label data-lang="en"><input type="radio" name="rotationMode" value="inner" checked> Rotate Inner Disk</label>
+                            <label data-lang="en"><input type="radio" name="rotationMode" value="outer"> Rotate Outer Disk</label>
+                            <label data-lang="vi"><input type="radio" name="rotationMode" value="inner" checked> Xoay vòng trong</label>
+                            <label data-lang="vi"><input type="radio" name="rotationMode" value="outer"> Xoay vòng ngoài</label>
+                        </div>
                         
                         <div class="form-group">
                             <label for="outer-disk-chars" data-lang="en">Outer Disk (Plaintext):</label>
