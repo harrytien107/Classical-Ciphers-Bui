@@ -1219,6 +1219,7 @@ footer {
     background-color: var(--card-bg);
     border: 2px solid var(--primary-color);
     z-index: 1;
+    transition: transform 0.3s ease;
 }
 
 .inner-disk {

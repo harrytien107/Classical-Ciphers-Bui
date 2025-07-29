@@ -1825,7 +1825,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 innerDiskChars.value = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 diskIndex.value = 'A';
                 diskKeyword.value = '';
-                rotateInnerDisk(0); // Reset rotation
+                rotateInnerDisk(0); // Reset inner disk rotation
+                rotateOuterDisk(0); // Reset outer disk rotation
                 createCipherDisk();
             });
         });
@@ -1983,28 +1984,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Disk rotation event listeners
         rotateLeftBtn.addEventListener('click', () => {
-            const mode=document.querySelector('input[name="rotationMode"]:checked').value;
-            const outerChars=outerDiskChars.value;
-            if(mode==='inner'){
-                const currentRotation=getCurrentRotation(innerDisk);
+            const mode = document.querySelector('input[name="rotationMode"]:checked').value;
+            const outerChars = outerDiskChars.value;
+            if (mode === 'inner') {
+                const currentRotation = getCurrentRotation(innerDisk);
                 rotateInnerDisk(currentRotation - (360/outerChars.length));
                 updateIndexFromRotation();
-            }else{
-                const currentRotation=getCurrentRotation(outerDisk);
+            } else {
+                const currentRotation = getCurrentRotation(outerDisk);
                 rotateOuterDisk(currentRotation - (360/outerChars.length));
+                // When rotating outer disk, no need to update index
             }
         });
 
         rotateRightBtn.addEventListener('click', () => {
-            const mode=document.querySelector('input[name="rotationMode"]:checked').value;
-            const outerChars=outerDiskChars.value;
-            if(mode==='inner'){
-                const currentRotation=getCurrentRotation(innerDisk);
+            const mode = document.querySelector('input[name="rotationMode"]:checked').value;
+            const outerChars = outerDiskChars.value;
+            if (mode === 'inner') {
+                const currentRotation = getCurrentRotation(innerDisk);
                 rotateInnerDisk(currentRotation + (360/outerChars.length));
                 updateIndexFromRotation();
-            }else{
-                const currentRotation=getCurrentRotation(outerDisk);
+            } else {
+                const currentRotation = getCurrentRotation(outerDisk);
                 rotateOuterDisk(currentRotation + (360/outerChars.length));
+                // When rotating outer disk, no need to update index
             }
         });
     }
@@ -2064,6 +2067,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set initial alignment
         const indexChar = diskIndex.value || 'A';
         alignDiskToCharacter(indexChar);
+        
+        // Make sure disks have no previous transform
+        // We'll set the rotation in alignDiskToCharacter
+        outerDisk.style.transform = 'rotate(0deg)';
     }
 
     function alignDiskToCharacter(char) {
@@ -2075,6 +2082,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Calculate degrees to rotate
             const degrees = indexPosition * (360 / outerChars.length);
             rotateInnerDisk(degrees);
+            // Reset outer disk rotation to 0 when aligning
+            rotateOuterDisk(0);
         }
     }
 
@@ -2082,6 +2091,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Normalize degrees to be within 0-359
         degrees = ((degrees % 360) + 360) % 360;
         innerDisk.style.transform = `rotate(${degrees}deg)`;
+    }
+
+    function rotateOuterDisk(degrees) {
+        // Normalize degrees to be within 0-359
+        degrees = ((degrees % 360) + 360) % 360;
+        outerDisk.style.transform = `rotate(${degrees}deg)`;
     }
 
     function getCurrentRotation(element) {
