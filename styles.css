@@ -1154,6 +1154,10 @@ footer {
     gap: 1rem;
     flex-wrap: wrap;
 }
+.rotation-mode-selector.rotation-mode-below{
+    justify-content: center;
+    margin-top: -0.25rem;
+}
 .rotation-mode-selector label {
     font-size: 0.85rem;
 }
@@ -1210,46 +1214,63 @@ footer {
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(var(--accent-color-rgb), 0.3);
+    box-shadow: none;
 }
 
 .outer-disk {
     width: 300px;
     height: 300px;
-    background-color: var(--card-bg);
+    background-color: #fff; /* white disk like screenshot */
     border: 2px solid var(--primary-color);
     z-index: 1;
     transition: transform 0.3s ease;
+}
+.outer-disk::before,
+.outer-disk::after{
+    content: '';
+    position: absolute;
+    inset: 10px; /* inner ring gap */
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+}
+.outer-disk::after{
+    inset: 50px; /* inner solid circle boundary like image */
 }
 
 .inner-disk {
     width: 220px;
     height: 220px;
-    background-color: var(--accent-color);
-    border: 2px solid var(--primary-color);
+    background-color: transparent;
+    border: none;
     top: 40px;
     left: 40px;
     z-index: 2;
     transition: transform 0.3s ease;
 }
+.inner-disk::before{
+    content:'';
+    position:absolute;
+    inset: 0;
+    border-radius:50%;
+    border:2px solid var(--primary-color);
+}
 
 .disk-center {
     position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: var(--primary-color);
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.9) 0 45%, rgba(0,0,0,0.4) 60%, transparent 70%);
     border-radius: 50%;
-    top: 135px;
-    left: 135px;
+    top: calc(150px - 5px);
+    left: calc(150px - 5px);
     z-index: 4;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .alignment-marker {
     position: absolute;
     width: 2px;
-    height: 40px;
-    background-color: red;
+    height: 150px;
+    background-color: var(--primary-color);
     top: 0;
     left: 149px;
     z-index: 3;
@@ -1257,23 +1278,46 @@ footer {
 
 .disk-letter {
     position: absolute;
-    font-size: 1rem;
-    font-weight: bold;
-    width: 26px;
-    height: 26px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 22px;
+    height: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    background-color: var(--card-bg);
-    border: 1px solid var(--primary-color);
-    color: var(--text-color);
+    border-radius: 0;
+    background-color: transparent; /* no boxes, just letters */
+    border: none;
+    color: #111; /* dark text on white disk */
 }
 
 .inner-letter {
-    background-color: var(--light-color);
-    color: var(--dark-color);
-    z-index: 2;
+    background-color: transparent;
+    color: #111;
+    z-index: 3;
+}
+
+/* highlight index/key letters in orange like screenshot */
+.disk-letter.highlight,
+.disk-letter.index-letter,
+.disk-letter.key-letter,
+.disk-letter.is-accent{ color: var(--accent-color); }
+
+/* radial dividers for disk rings */
+.ring-divider{
+    position:absolute;
+    width:1px;                 /* mảnh hơn */
+    height:40px;               /* chỉ vạch tick gần vành, không kéo tới tâm */
+    left:149px;
+    top:110px;                 /* đáy nằm ở tâm (150px) => 110 + 40 = 150 */
+    background-color: var(--primary-color);
+    opacity: 0.25;             /* rất nhẹ, không gây "xám xám" */
+    z-index:1;
+    transform-origin: bottom center;
+    pointer-events: none;
+}
+.inner-divider{
+    display: none; /* tắt tia ở vòng trong để không bị rối */
 }
 
 .disk-controls {

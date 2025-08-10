@@ -40,6 +40,7 @@
             <li><a href="#trithemius" data-lang="en">Trithemius Cipher</a><a href="#trithemius" data-lang="vi">Mã Trithemius</a></li>
             <li><a href="#vigenere" data-lang="en">Vigenère Cipher</a><a href="#vigenere" data-lang="vi">Mã Vigénère</a></li>
             <li><a href="#cipher-disk" data-lang="en">Cipher Disk</a><a href="#cipher-disk" data-lang="vi">Đĩa Mã Hóa</a></li>
+            <li><a href="#cipher-disk-visualization" data-lang="en">Cipher Disk Visualization</a><a href="#cipher-disk-visualization" data-lang="vi">Hình dung Đĩa Mã Hóa</a></li>
         </ul>
     </nav>
     
@@ -523,24 +524,17 @@
                     <div class="disk-settings">
                         <h4 data-lang="en">Disk Configuration</h4>
                         <h4 data-lang="vi">Cấu hình đĩa mã hóa</h4>
-                        <!-- Rotation mode selector -->
-                        <div class="form-group rotation-mode-selector">
-                            <label data-lang="en"><input type="radio" name="rotationMode" value="inner" checked> Rotate Inner Disk</label>
-                            <label data-lang="en"><input type="radio" name="rotationMode" value="outer"> Rotate Outer Disk</label>
-                            <label data-lang="vi"><input type="radio" name="rotationMode" value="inner" checked> Xoay vòng trong</label>
-                            <label data-lang="vi"><input type="radio" name="rotationMode" value="outer"> Xoay vòng ngoài</label>
-                        </div>
                         
                         <div class="form-group">
                             <label for="outer-disk-chars" data-lang="en">Outer Disk (Plaintext):</label>
                             <label for="outer-disk-chars" data-lang="vi">Vòng ngoài (Plaintext):</label>
-                            <input type="text" id="outer-disk-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="26" placeholder="Custom characters for outer disk (A-Z)" data-placeholder-en="Custom characters for outer disk (A-Z)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng ngoài (A-Z)">
+                            <input type="text" id="outer-disk-chars" value="AWCDEUGILMNOPQRSTVXY12KH" maxlength="50" placeholder="Custom characters for outer disk (A-Z, 0-9, symbols)" data-placeholder-en="Custom characters for outer disk (A-Z, 0-9, symbols)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng ngoài (A-Z, 0-9, ký hiệu)">
                         </div>
                         
                         <div class="form-group">
                             <label for="inner-disk-chars" data-lang="en">Inner Disk (Ciphertext):</label>
                             <label for="inner-disk-chars" data-lang="vi">Vòng trong (Ciphertext):</label>
-                            <input type="text" id="inner-disk-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="26" placeholder="Custom characters for inner disk (A-Z)" data-placeholder-en="Custom characters for inner disk (A-Z)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng trong (A-Z)">
+                            <input type="text" id="inner-disk-chars" value="DLGAZENBOSFCHTYQIXKVP&MR" maxlength="50" placeholder="Custom characters for inner disk (A-Z, 0-9, symbols)" data-placeholder-en="Custom characters for inner disk (A-Z, 0-9, symbols)" data-placeholder-vi="Ký tự tùy chỉnh cho vòng trong (A-Z, 0-9, ký hiệu)">
                         </div>
                         
                         <div class="form-group">
@@ -571,28 +565,61 @@
                         <button id="clear-disk" data-lang="en">Clear All</button>
                         <button id="clear-disk" data-lang="vi">Xóa tất cả</button>
                     </div>
-                </div>
-                <div class="output-container">
-                    <div class="result-header">
-                        <label for="disk-output" data-lang="en">Result:</label>
-                        <label for="disk-output" data-lang="vi">Kết quả:</label>
-                        <div class="result-actions">
-                            <button id="copy-disk-result" class="icon-button" title="Copy to clipboard" aria-label="Copy to clipboard">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                            <button id="explain-disk-btn" class="icon-button" title="Show explanation" aria-label="Show explanation">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
+
+                    <!-- Move Result block directly below buttons as requested -->
+                    <div class="output-container">
+                        <div class="result-header">
+                            <label for="disk-output" data-lang="en">Result:</label>
+                            <label for="disk-output" data-lang="vi">Kết quả:</label>
+                            <div class="result-actions">
+                                <button id="copy-disk-result" class="icon-button" title="Copy to clipboard" aria-label="Copy to clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button id="explain-disk-btn" class="icon-button" title="Show explanation" aria-label="Show explanation">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="disk-output" readonly></textarea>
+                        <div class="explanation-button-container">
+                            <button id="disk-explanation-btn" class="btn-explanation" data-lang="en">Show Explanation</button>
+                            <button id="disk-explanation-btn" class="btn-explanation" data-lang="vi">Xem Giải thích</button>
                         </div>
                     </div>
-                    <textarea id="disk-output" readonly></textarea>
-                    
-                    <!-- Replace explanation container with explanation button -->
-                    <div class="explanation-button-container">
-                        <button id="disk-explanation-btn" class="btn-explanation" data-lang="en">Show Explanation</button>
-                        <button id="disk-explanation-btn" class="btn-explanation" data-lang="vi">Xem Giải thích</button>
+                </div>
+
+                <!-- Keep disk UI and modal below -->
+                <div class="cipher-disk-container">
+                    <div class="disk-titles">
+                        <h4 data-lang="en">Interactive Cipher Disk:</h4>
+                        <h4 data-lang="vi">Đĩa Mã Hóa Tương Tác:</h4>
+                        <h5 data-lang="en">Showing alignment of disks</h5>
+                        <h5 data-lang="vi">Hiển thị căn chỉnh các đĩa</h5>
                     </div>
                     
+                    <div class="cipher-disk-wrapper">
+                        <div class="cipher-disk">
+                            <div class="outer-disk" id="outer-disk"></div>
+                            <div class="inner-disk" id="inner-disk"></div>
+                            <div class="disk-center"></div>
+                            <div class="alignment-marker"></div>
+                        </div>
+                        <div class="disk-controls">
+                            <button id="rotate-left" class="disk-control-btn">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button id="rotate-right" class="disk-control-btn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                        <div class="form-group rotation-mode-selector rotation-mode-below">
+                            <label data-lang="en"><input type="radio" name="rotationMode" value="inner" checked> Rotate Inner Disk</label>
+                            <label data-lang="en"><input type="radio" name="rotationMode" value="outer"> Rotate Outer Disk</label>
+                            <label data-lang="vi"><input type="radio" name="rotationMode" value="inner" checked> Xoay vòng trong</label>
+                            <label data-lang="vi"><input type="radio" name="rotationMode" value="outer"> Xoay vòng ngoài</label>
+                        </div>
+                    </div>
+
                     <!-- Modal for explanation -->
                     <div id="explanation-modal" class="modal">
                         <div class="modal-content">
@@ -611,47 +638,19 @@
                         </div>
                     </div>
                     
-                    <div class="cipher-disk-container">
-                        <div class="disk-titles">
-                            <h4 data-lang="en">Interactive Cipher Disk:</h4>
-                            <h4 data-lang="vi">Đĩa Mã Hóa Tương Tác:</h4>
-                            <h5 data-lang="en">Showing alignment of disks</h5>
-                            <h5 data-lang="vi">Hiển thị căn chỉnh các đĩa</h5>
-                        </div>
-                        
-                        <div class="cipher-disk-wrapper">
-                            <div class="cipher-disk">
-                                <div class="outer-disk" id="outer-disk"></div>
-                                <div class="inner-disk" id="inner-disk"></div>
-                                <div class="disk-center"></div>
-                                <div class="alignment-marker"></div>
-                            </div>
-                            <div class="disk-controls">
-                                <button id="rotate-left" class="disk-control-btn">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                                <button id="rotate-right" class="disk-control-btn">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="algorithm-formula">
-                            <h5 data-lang="en">Encryption Formula:</h5>
-                            <h5 data-lang="vi">Công thức mã hóa:</h5>
-                            <ol>
-                                <li data-lang="en">Find the keyword character position on outer disk</li>
-                                <li data-lang="en">Find the plaintext character position on outer disk</li>
-                                <li data-lang="en">Calculate: relativePos = plainPos - keywordPos</li>
-                                <li data-lang="en">Calculate: innerIndex = (indexPos + relativePos + innerLength) % innerLength</li>
-                                <li data-lang="en">Get character at innerIndex position from inner disk</li>
-                                <li data-lang="vi">Tìm vị trí của ký tự keyword trong vòng ngoài</li>
-                                <li data-lang="vi">Tìm vị trí của ký tự plaintext trong vòng ngoài</li>
-                                <li data-lang="vi">Tính: relativePos = plainPos - keywordPos</li>
-                                <li data-lang="vi">Tính: innerIndex = (indexPos + relativePos + innerLength) % innerLength</li>
-                                <li data-lang="vi">Lấy ký tự tại vị trí innerIndex trong vòng trong</li>
-                            </ol>
-                        </div>
+                    <div class="algorithm-formula">
+                        <h5 data-lang="en">Standard Cipher Disk Method:</h5>
+                        <h5 data-lang="vi">Phương pháp Đĩa Mã chuẩn:</h5>
+                        <ol>
+                            <li data-lang="en">Set alignment: Index character on inner disk aligns with 'A' on outer disk</li>
+                            <li data-lang="en">Find plaintext character position on outer disk</li>
+                            <li data-lang="en">Calculate: innerIndex = (plainPos + indexPos) % innerLength</li>
+                            <li data-lang="en">Get encrypted character from inner disk at innerIndex</li>
+                            <li data-lang="vi">Căn chỉnh: Ký tự chỉ mục trên vòng trong khớp với 'A' trên vòng ngoài</li>
+                            <li data-lang="vi">Tìm vị trí ký tự plaintext trên vòng ngoài</li>
+                            <li data-lang="vi">Tính: innerIndex = (plainPos + indexPos) % innerLength</li>
+                            <li data-lang="vi">Lấy ký tự mã hóa từ vòng trong tại innerIndex</li>
+                        </ol>
                     </div>
                 </div>
             </div>
@@ -663,6 +662,57 @@
                 <p data-lang="vi">Mã hóa "MEET ME AT MIDNIGHT" với khóa 'D'</p>
                 <button id="try-disk-example" data-lang="en">Try this example</button>
                 <button id="try-disk-example" data-lang="vi">Thử ví dụ này</button>
+            </div>
+        </section>
+
+        <!-- Cipher Disk Visualization Section (independent from interactive Cipher Disk) -->
+        <section id="cipher-disk-visualization" class="cipher-section">
+            <h2 data-lang="en">Cipher Disk Visualization <span class="icon-btn info-btn" data-cipher="diskviz" data-type="info" title="What is this?"><i class="fas fa-info-circle"></i></span></h2>
+            <h2 data-lang="vi">Hình dung Đĩa Mã Hóa <span class="icon-btn info-btn" data-cipher="diskviz" data-type="info" title="Đây là gì?"><i class="fas fa-info-circle"></i></span></h2>
+            <p class="description" data-lang="en">A read-only visualization to see how a cipher disk aligns and rotates. This does not affect the Interactive Cipher Disk above.</p>
+            <p class="description" data-lang="vi">Một hình ảnh hóa chỉ để xem đĩa mã hóa căn chỉnh và xoay như thế nào. Mục này không liên quan tới Đĩa Mã Hóa tương tác bên trên.</p>
+
+            <div class="cipher-tool">
+                <div class="input-container">
+                    <div class="form-group">
+                        <label for="viz-outer-chars" data-lang="en">Outer Disk (Plaintext):</label>
+                        <label for="viz-outer-chars" data-lang="vi">Vòng ngoài (Plaintext):</label>
+                        <input type="text" id="viz-outer-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="viz-inner-chars" data-lang="en">Inner Disk (Ciphertext):</label>
+                        <label for="viz-inner-chars" data-lang="vi">Vòng trong (Ciphertext):</label>
+                        <input type="text" id="viz-inner-chars" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="viz-index" data-lang="en">Align inner to character:</label>
+                        <label for="viz-index" data-lang="vi">Căn vòng trong tới ký tự:</label>
+                        <input type="text" id="viz-index" value="A" maxlength="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="viz-speed" data-lang="en">Auto-rotate speed:</label>
+                        <label for="viz-speed" data-lang="vi">Tốc độ xoay tự động:</label>
+                        <input type="range" id="viz-speed" min="100" max="1500" step="50" value="600">
+                    </div>
+                    <div class="button-group">
+                        <button id="viz-play" data-lang="en">Play</button>
+                        <button id="viz-play" data-lang="vi">Phát</button>
+                        <button id="viz-pause" data-lang="en">Pause</button>
+                        <button id="viz-pause" data-lang="vi">Tạm dừng</button>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <div class="cipher-disk-container">
+                        <div class="cipher-disk-wrapper">
+                            <div class="cipher-disk">
+                                <div class="outer-disk" id="viz-outer-disk"></div>
+                                <div class="inner-disk" id="viz-inner-disk"></div>
+                                <div class="disk-center"></div>
+                                <div class="alignment-marker"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
