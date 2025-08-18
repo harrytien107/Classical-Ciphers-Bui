@@ -2045,9 +2045,10 @@ document.addEventListener('DOMContentLoaded', () => {
         rotateLeftBtn.addEventListener('click', () => {
             const mode = document.querySelector('input[name="rotationMode"]:checked').value;
             const outerChars = outerDiskChars.value;
+            const innerChars = innerDiskChars.value;
             if (mode === 'inner') {
                 const currentRotation = getCurrentRotation(innerDisk);
-                rotateInnerDisk(currentRotation - (360/outerChars.length));
+                rotateInnerDisk(currentRotation - (360/innerChars.length));
                 updateIndexFromRotation();
             } else {
                 const currentRotation = getCurrentRotation(outerDisk);
@@ -2061,9 +2062,10 @@ document.addEventListener('DOMContentLoaded', () => {
         rotateRightBtn.addEventListener('click', () => {
             const mode = document.querySelector('input[name="rotationMode"]:checked').value;
             const outerChars = outerDiskChars.value;
+            const innerChars = innerDiskChars.value;
             if (mode === 'inner') {
                 const currentRotation = getCurrentRotation(innerDisk);
-                rotateInnerDisk(currentRotation + (360/outerChars.length));
+                rotateInnerDisk(currentRotation + (360/innerChars.length));
                 updateIndexFromRotation();
             } else {
                 const currentRotation = getCurrentRotation(outerDisk);
@@ -2257,14 +2259,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const innerChars = innerDiskChars.value || '';
         const indexChar = diskIndex.value || 'A';
 
-        // Always highlight the letter 'A' on outer disk (fixed reference point)
-        if (outerChars.includes('A')) {
+        // Highlight the top character on the OUTER disk
+        if (outerChars.length) {
+            const currentOuter = getCurrentRotation(outerDisk);
+            const stepOuter = 360 / outerChars.length;
+            const normOuter = ((currentOuter % 360) + 360) % 360;
+            const outerIdx = Math.round(normOuter / stepOuter) % outerChars.length;
+            const outerTopChar = outerChars.charAt(outerIdx);
             const outerLetters = Array.from(outerDisk.querySelectorAll('.outer-letter'));
-            const outerEl = outerLetters.find(el => el.textContent.toUpperCase() === 'A');
+            const outerEl = outerLetters.find(el => el.textContent.toUpperCase() === outerTopChar.toUpperCase());
             if (outerEl) outerEl.classList.add('is-accent');
         }
         
-        // Highlight the index character on inner disk (the one aligned with outer 'A')
+        // Highlight the index character on the INNER disk (top inner)
         if (innerChars.includes(indexChar)) {
             const innerLetters = Array.from(innerDisk.querySelectorAll('.inner-letter'));
             const innerEl = innerLetters.find(el => el.textContent.toUpperCase() === indexChar.toUpperCase());
@@ -2306,100 +2313,102 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateIndexFromRotation() {
-        // When rotating INNER disk, the outer index (top outer character) should NOT change.
-        // Just refresh highlights so the inner top letter updates.
+        // When rotating INNER disk, update diskIndex to the inner character at 12 o'clock
+        const innerChars = innerDiskChars.value;
+        const currentRotation = getCurrentRotation(innerDisk);
+        const step = 360 / innerChars.length;
+        const normalized = ((currentRotation % 360) + 360) % 360;
+        const idx = Math.round(normalized / step) % innerChars.length;
+        diskIndex.value = innerChars.charAt(idx);
         highlightCurrentLetters();
     }
 
     function updateIndexFromOuterRotation() {
-        // Update index according to OUTER disk rotation (marker at top indicates current outer char)
-        const outerChars = outerDiskChars.value;
-        const currentRotation = getCurrentRotation(outerDisk);
-        const normalizedRotation = (currentRotation % 360 + 360) % 360;
-        const charIndex = Math.round(normalizedRotation / (360 / outerChars.length)) % outerChars.length;
-        diskIndex.value = outerChars.charAt(charIndex);
+        // Rotating the OUTER disk should not change the inner index character.
+        // Just refresh highlights so the top outer character updates.
         highlightCurrentLetters();
     }
 
     function cipherDiskEncryptAdvanced(text, keyword, outerChars, innerChars, indexChar) {
-        // Standard Cipher Disk: indexChar on inner disk aligns with first character of outer disk
-        // For each plaintext letter, find its position on outer disk and get corresponding letter from inner disk
-        
-        let result = '';
-        let encryptedCharCount = 0; // Counter for encrypted characters only
-        
-        // Find where the index character is positioned on the inner disk
+        // Validate ring lengths and uniqueness
+        if (!outerChars || !innerChars || outerChars.length !== innerChars.length || outerChars.length === 0) {
+            console.warn('Cipher Disk: outer and inner rings must have equal, non-zero length');
+            return text;
+        }
+        const setOuter = new Set(outerChars);
+        const setInner = new Set(innerChars);
+        if (setOuter.size !== outerChars.length || setInner.size !== innerChars.length) {
+            console.warn('Cipher Disk: rings should contain unique characters');
+        }
+
+        // Effective keyword: only characters present on the outer ring; fallback to 'A' or first outer char
+        const baseOuter = outerChars;
+        const cleanedKey = (keyword || '').toUpperCase().split('').filter(ch => baseOuter.includes(ch)).join('');
+        const effectiveKey = cleanedKey.length ? cleanedKey : (baseOuter.includes('A') ? 'A' : baseOuter[0]);
+
         const indexPos = innerChars.indexOf(indexChar);
         if (indexPos === -1) {
             console.error('Index character not found in inner disk');
             return text;
         }
-        
+
+        let result = '';
+        let keyPtr = 0; // advance only on encodable characters
+
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            // Only encrypt letters that exist on the outer disk
             if (outerChars.includes(char)) {
-                // Find position of plaintext character on outer disk
                 const plainPos = outerChars.indexOf(char);
-                
-                // Calculate the corresponding position on inner disk
-                // Reverse engineered pattern from real data:
-                // A→P(20), L→X(9), L→E(21), Y→X(22), O→B(20), U→Y(9)
-                const offsetPattern = [20, 9, 21, 22]; // Pattern repeats every 4 characters
-                const patternPos = encryptedCharCount % offsetPattern.length;
-                const offset = offsetPattern[patternPos];
-                const innerIndex = (plainPos + offset) % innerChars.length;
-                
-                // Get encrypted character
+                const keyChar = effectiveKey[keyPtr % effectiveKey.length];
+                const keywordPos = outerChars.indexOf(keyChar);
+                const relativePos = (plainPos - keywordPos + outerChars.length) % outerChars.length;
+                const innerIndex = (indexPos + relativePos) % innerChars.length;
                 result += innerChars.charAt(innerIndex);
-                encryptedCharCount++; // Increment counter for encrypted characters
+                keyPtr++;
             } else {
-                // Skip spaces and non-disk characters (don't add them to result)
-                // This matches the expected behavior where spaces are removed
-                continue;
+                // Keep non-disk characters unchanged
+                result += char;
             }
         }
-        
         return result;
     }
 
     function cipherDiskDecryptAdvanced(text, keyword, outerChars, innerChars, indexChar) {
-        // Standard Cipher Disk: Find ciphertext letter on inner ring, replace with corresponding letter on outer ring
-        
-        let result = '';
-        let decryptedCharCount = 0; // Counter for decrypted characters only
-        
-        // Find where the index character is positioned on the inner disk
+        // Validate ring lengths
+        if (!outerChars || !innerChars || outerChars.length !== innerChars.length || outerChars.length === 0) {
+            console.warn('Cipher Disk: outer and inner rings must have equal, non-zero length');
+            return text;
+        }
+
+        // Effective keyword as in encryption
+        const baseOuter = outerChars;
+        const cleanedKey = (keyword || '').toUpperCase().split('').filter(ch => baseOuter.includes(ch)).join('');
+        const effectiveKey = cleanedKey.length ? cleanedKey : (baseOuter.includes('A') ? 'A' : baseOuter[0]);
+
         const indexPos = innerChars.indexOf(indexChar);
         if (indexPos === -1) {
             console.error('Index character not found in inner disk');
             return text;
         }
-        
+
+        let result = '';
+        let keyPtr = 0; // advance only on decodable characters
+
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            // Only decrypt letters that exist on the inner disk
             if (innerChars.includes(char)) {
-                // Find position of ciphertext character on inner disk
                 const cipherPos = innerChars.indexOf(char);
-                
-                // Calculate the corresponding position on outer disk
-                // Reverse the pattern-based encryption
-                const offsetPattern = [20, 9, 21, 22]; // Same pattern as encryption
-                const patternPos = decryptedCharCount % offsetPattern.length;
-                const offset = offsetPattern[patternPos];
-                const outerIndex = (cipherPos - offset + outerChars.length) % outerChars.length;
-                
-                // Get decrypted character
+                const keyChar = effectiveKey[keyPtr % effectiveKey.length];
+                const keywordPos = outerChars.indexOf(keyChar);
+                const relativePos = (cipherPos - indexPos + innerChars.length) % innerChars.length;
+                const outerIndex = (keywordPos + relativePos) % outerChars.length;
                 result += outerChars.charAt(outerIndex);
-                decryptedCharCount++; // Increment counter for decrypted characters
+                keyPtr++;
             } else {
-                // Skip spaces and non-disk characters (don't add them to result)
-                // This matches the encryption behavior where spaces are removed
-                continue;
+                // Keep non-disk characters unchanged
+                result += char;
             }
         }
-        
         return result;
     }
     
@@ -2514,7 +2523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${isEnglish ? 'Find positions:' : 'Tìm vị trí:'}
                     <ul>
                         <li>keywordPos = ${isEnglish ? 'position of' : 'vị trí của'} keyChar ${isEnglish ? 'in' : 'trong'} outerChars</li>
-                        <li>indexPos = ${isEnglish ? 'position of' : 'vị trí của'} indexChar ${isEnglish ? 'in' : 'trong'} outerChars</li>
+                        <li>indexPos = ${isEnglish ? 'position of' : 'vị trí của'} indexChar ${isEnglish ? 'in' : 'trong'} innerChars</li>
                         <li>plainPos = ${isEnglish ? 'position of' : 'vị trí của'} plainChar ${isEnglish ? 'in' : 'trong'} outerChars</li>
                     </ul>
                     ${isEnglish ? 'Calculate:' : 'Tính toán:'}
@@ -2528,7 +2537,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${isEnglish ? 'Find positions:' : 'Tìm vị trí:'}
                     <ul>
                         <li>keywordPos = ${isEnglish ? 'position of' : 'vị trí của'} keyChar ${isEnglish ? 'in' : 'trong'} outerChars</li>
-                        <li>indexPos = ${isEnglish ? 'position of' : 'vị trí của'} indexChar ${isEnglish ? 'in' : 'trong'} outerChars</li>
+                        <li>indexPos = ${isEnglish ? 'position of' : 'vị trí của'} indexChar ${isEnglish ? 'in' : 'trong'} innerChars</li>
                         <li>cipherPos = ${isEnglish ? 'position of' : 'vị trí của'} cipherChar ${isEnglish ? 'in' : 'trong'} innerChars</li>
                     </ul>
                     ${isEnglish ? 'Calculate:' : 'Tính toán:'}
@@ -2568,49 +2577,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 </thead>
                 <tbody>`;
         
+        // Build effective keyword identical to algorithm and advance only on encodable characters
+        const baseOuter = outerChars;
+        const cleanedKey = (keyword || '').toUpperCase().split('').filter(ch => baseOuter.includes(ch)).join('');
+        const effectiveKey = cleanedKey.length ? cleanedKey : (baseOuter.includes('A') ? 'A' : baseOuter[0]);
+        let keyPtr = 0;
+
         for (let i = 0; i < inputChars.length; i++) {
             const char = inputChars[i];
+            const outCh = outputChars[i];
             
-            // Only explain letters that are on the disks
-            if (outerChars.includes(char) && innerChars.includes(outputChars[i])) {
-                const keyChar = keyword[i % keyword.length];
-                
+            if (outerChars.includes(char)) {
+                const keyChar = effectiveKey[keyPtr % effectiveKey.length];
+                const keywordPos = outerChars.indexOf(keyChar);
+                const indexPos = innerChars.indexOf(indexChar);
                 if (isEncrypt) {
-                    const keywordPos = outerChars.indexOf(keyChar);
-                    const indexPos = outerChars.indexOf(indexChar);
                     const plainPos = outerChars.indexOf(char);
                     const relativePos = (plainPos - keywordPos + outerChars.length) % outerChars.length;
                     const innerIndex = (indexPos + relativePos) % innerChars.length;
-                    
                     html += `<tr>
                         <td><code>${char}</code> (pos ${plainPos})</td>
                         <td><code>${keyChar}</code> (pos ${keywordPos})</td>
                         <td>rel = (${plainPos} - ${keywordPos} + ${outerChars.length}) % ${outerChars.length} = ${relativePos}<br>
                             idx = (${indexPos} + ${relativePos}) % ${innerChars.length} = ${innerIndex}</td>
-                        <td><code>${outputChars[i]}</code></td>
+                        <td><code>${outCh}</code></td>
                     </tr>`;
                 } else {
-                    const keywordPos = outerChars.indexOf(keyChar);
-                    const indexPos = outerChars.indexOf(indexChar);
                     const cipherPos = innerChars.indexOf(char);
                     const relativePos = (cipherPos - indexPos + innerChars.length) % innerChars.length;
                     const outerIndex = (keywordPos + relativePos) % outerChars.length;
-                    
                     html += `<tr>
                         <td><code>${char}</code> (pos ${cipherPos})</td>
                         <td><code>${keyChar}</code> (pos ${keywordPos})</td>
                         <td>rel = (${cipherPos} - ${indexPos} + ${innerChars.length}) % ${innerChars.length} = ${relativePos}<br>
                             idx = (${keywordPos} + ${relativePos}) % ${outerChars.length} = ${outerIndex}</td>
-                        <td><code>${outputChars[i]}</code></td>
+                        <td><code>${outCh}</code></td>
                     </tr>`;
                 }
+                keyPtr++;
             } else {
                 // Non-disk characters
                 html += `<tr>
                     <td><code>${char}</code></td>
                     <td>-</td>
                     <td>${isEnglish ? 'Not in disk' : 'Không có trong đĩa'}</td>
-                    <td><code>${outputChars[i] || ''}</code></td>
+                    <td><code>${outCh || ''}</code></td>
                 </tr>`;
             }
         }
