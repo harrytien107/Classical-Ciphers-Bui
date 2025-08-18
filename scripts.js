@@ -1313,6 +1313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const trithemiusTable = document.getElementById('trithemius-table');
         const trithemiusKeySequence = document.getElementById('trithemius-key-sequence');
         const tryTrithemiusExample = document.querySelectorAll('#try-trithemius-example');
+        const trithemiusExplainFull = document.getElementById('trithemius-explain-full');
+        let trithemiusLastContext = null;
         
         // Display Tabula Recta
         displayTabulaRecta();
@@ -1363,6 +1365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Generate explanation
                 generateTrithemiusExplanation(text, result, keyType, customKey, keySequence, true);
+                trithemiusLastContext = { input: text, output: result, keyType, customKey, keySequence, isEncrypt: true };
             });
         });
         
@@ -1384,6 +1387,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Generate explanation
                 generateTrithemiusExplanation(text, result, keyType, customKey, keySequence, false);
+                trithemiusLastContext = { input: text, output: result, keyType, customKey, keySequence, isEncrypt: false };
             });
         });
         
@@ -1462,6 +1466,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Create language-specific explanation texts
         const isEnglish = document.body.classList.contains('lang-en');
+        // Determine whether to show full or condensed explanation
+        const explainFullEl = document.getElementById('trithemius-explain-full');
+        const showFull = !explainFullEl || explainFullEl.checked; // default to full
+        const MAX_STEPS = 8;
         
         // Determine method description based on key type
         let method;
@@ -1513,21 +1521,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
         
-        // Show part of the key sequence
+        // Show key sequence (full or condensed)
         html += `<div class="step">${isEnglish ? 'Key sequence: ' : 'Dãy khóa: '}`;
-        for (let i = 0; i < Math.min(cleanText.length, 8); i++) {
+        const keyShowCount = showFull ? cleanText.length : Math.min(cleanText.length, MAX_STEPS);
+        for (let i = 0; i < keyShowCount; i++) {
             html += `<span class="letter">${keySequence[i]}</span> `;
         }
-        if (cleanText.length > 8) {
-            html += `... (${cleanText.length - 8} ${isEnglish ? 'more' : 'nữa'})`;
+        if (!showFull && cleanText.length > MAX_STEPS) {
+            html += `... (+${cleanText.length - MAX_STEPS} ${isEnglish ? 'more' : 'nữa'})`;
         }
         html += `</div>`;
         
         // Step 3: Apply the cipher
         html += `<div class="step">${isEnglish ? 'Step 3: Apply the cipher to each letter' : 'Bước 3: Áp dụng mã hóa cho từng chữ cái'}</div>`;
         
-        // Process each character
-        for (let i = 0; i < Math.min(cleanText.length, 8); i++) {
+        // Process each character (full or condensed)
+        const stepShowCount = showFull ? cleanText.length : Math.min(cleanText.length, MAX_STEPS);
+        for (let i = 0; i < stepShowCount; i++) {
             const char = cleanText[i];
             const code = char.charCodeAt(0) - 65; // A=0, B=1, ...
             const shift = keySequence[i];
@@ -1557,11 +1567,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
         }
-        
-        if (cleanText.length > 8) {
+        if (!showFull && cleanText.length > MAX_STEPS) {
             html += `<div class="step">${isEnglish ? 'Process continues for all remaining letters...' : 'Quá trình tiếp tục cho tất cả các chữ cái còn lại...'}</div>`;
         }
-        
+
         explanationContent.innerHTML = html;
         explanationContainer.classList.add('has-content');
     }
